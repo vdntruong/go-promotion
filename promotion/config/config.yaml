@@ -1,0 +1,15 @@
+app:
+  name: "promotion-ms"
+  version: 0.1
+
+http:
+  port: "4000"
+  read-timeout: "10s"
+  write-timeout: "10s"
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "user"
+  password: "password"
+  name: "promotion_db"
