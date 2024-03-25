@@ -28,13 +28,13 @@ import (
 )
 
 func Run(cfg *config.Config) {
-	fmt.Printf("Config %+v", cfg)
-
 	// Infrastructure
 	db, err := gormdb.DB(cfg)
 	if err != nil {
 		panic(err)
 	}
+
+	db.AutoMigrate(&model.User{})
 
 	sqlDB, err := db.DB()
 	if err != nil {
@@ -42,11 +42,13 @@ func Run(cfg *config.Config) {
 	}
 	defer sqlDB.Close()
 
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
 	redisAddr := fmt.Sprintf("%s:%s", cfg.Redis.Host, cfg.Redis.Port)
 	asynqClient := asynq.NewClient(asynq.RedisClientOpt{Addr: redisAddr, Password: cfg.Redis.Password})
 	defer asynqClient.Close()
-
-	db.AutoMigrate(&model.User{})
 
 	handler := gin.New()
 	handler.Use(cors.Default())
@@ -75,11 +77,11 @@ func Run(cfg *config.Config) {
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
+			log.Fatalf("failed listen: %s\n", err)
 		}
 	}()
 
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutdown Server ...")
@@ -95,9 +97,5 @@ func Run(cfg *config.Config) {
 		}
 	}
 
-	select {
-	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
-	}
 	log.Println("Server exiting")
 }

@@ -13,3 +13,8 @@ database:
   user: "user"
   password: "password"
   name: "promotion_db"
+
+redis:
+  host: "localhost"
+  port: "6379"
+  password: "mypassword"

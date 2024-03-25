@@ -16,13 +16,6 @@ type UserRepository struct {
 }
 
 func NewUserRepository(db *gorm.DB) *UserRepository {
-	sqlDB, err := db.DB()
-	if err != nil {
-		panic(err)
-	}
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
-	sqlDB.SetConnMaxLifetime(time.Hour)
 	return &UserRepository{db: db}
 }
 
@@ -49,7 +42,16 @@ func (c *UserRepository) FindUserByEmail(ctx context.Context, email string) (*mo
 
 func (c *UserRepository) UpdateFirstLogin(ctx context.Context, id uint, dateTime time.Time, callback func() error) error {
 	tx := c.db.Begin()
-	
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
 	var result = model.User{Model: gorm.Model{ID: id}, FirstLoginDate: &dateTime}
 	if err := tx.WithContext(ctx).Model(&result).
 		Where("id = ?", id).
@@ -63,6 +65,5 @@ func (c *UserRepository) UpdateFirstLogin(ctx context.Context, id uint, dateTime
 		return err
 	}
 
-	tx.Commit()
-	return nil
+	return tx.Commit().Error
 }

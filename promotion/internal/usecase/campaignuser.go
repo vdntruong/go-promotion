@@ -16,17 +16,18 @@ func NewCampaignUserService(repo CampaignUserRepo) *CampaignUserService {
 	return &CampaignUserService{repo: repo}
 }
 
-func (s *CampaignUserService) CreateCampaignUser(ctx context.Context, campaignExtID, userExtID string, registerDate time.Time) (*model.CampaignUser, error) {
+func (s *CampaignUserService) CreateCampaignUser(
+	ctx context.Context,
+	campaignExtID string,
+	userExtID string,
+	registerDate time.Time,
+) (*model.CampaignUser, *model.Campaign, error) {
 	var cuser = model.CampaignUser{
 		CampaignExtID:    campaignExtID,
 		UserExtID:        userExtID,
 		RegistrationDate: registerDate,
 	}
-	return s.repo.CreateCampaignUser(ctx, cuser)
-}
-
-func (s *CampaignUserService) DispatchUserLogin(context.Context) error {
-	return nil
+	return s.repo.CreateCampaignUserWithEligibility(ctx, cuser)
 }
 
 func (s *CampaignUserService) GetCampaignUsers(ctx context.Context, filter dto.CampaignUserFilter) ([]*model.CampaignUser, error) {

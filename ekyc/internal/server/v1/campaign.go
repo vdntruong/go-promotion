@@ -7,6 +7,7 @@ import (
 	"ekyc/internal/server/v1/resp"
 	"ekyc/internal/usecase"
 
+	limit "github.com/aviddiviner/gin-limit"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
 )
@@ -19,7 +20,8 @@ func newUserRoutes(handler *gin.RouterGroup, c usecase.UserUsecase) {
 	r := &userRoutes{c}
 	h := handler.Group("/users")
 	{
-		h.POST("/sign-up", r.SignUp)
+		// maximum of 100 simultaneous connections per instace
+		h.POST("/sign-up", limit.MaxAllowed(100), r.SignUp)
 		h.POST("/sign-in", r.SignIn)
 	}
 }

@@ -13,12 +13,12 @@ type Authenticator interface {
 }
 
 type UserUsecase interface {
-	SignUp(ctx context.Context, email, password string, campaignExtID string) (*model.User, error)
+	SignUp(ctx context.Context, email, password string, campaignExtID *string) (*model.User, error)
 	SignIn(ctx context.Context, email, password string) (string, error)
 }
 
 type UserEventDistributor interface {
-	DispatchUserFirstTimeLogin(userExtID string, dateTime time.Time) error
+	DispatchUserFirstTimeLogin(userExtID string, campaignExtID string, dateTime time.Time) error
 }
 
 type UserRepo interface {

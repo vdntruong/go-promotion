@@ -1,27 +1,11 @@
 package distributor
 
 import (
-	"encoding/json"
 	"log"
 	"time"
 
 	"github.com/hibiken/asynq"
 )
-
-const EventTypeUserFirstLogin = "user:first-time-login"
-
-type UserFirstLoginPayload struct {
-	UserExtID     string
-	LoginDateTime time.Time
-}
-
-func newUserFirstLoginEvent(userExtID string, dateTime time.Time) (*asynq.Task, error) {
-	payload, err := json.Marshal(UserFirstLoginPayload{UserExtID: userExtID, LoginDateTime: dateTime})
-	if err != nil {
-		return nil, err
-	}
-	return asynq.NewTask(EventTypeUserFirstLogin, payload), nil
-}
 
 type UserDistributor struct {
 	client *asynq.Client
@@ -32,8 +16,9 @@ func NewUserDistributor(c *asynq.Client) *UserDistributor {
 		client: c,
 	}
 }
-func (u *UserDistributor) DispatchUserFirstTimeLogin(userExtID string, dateTime time.Time) error {
-	t, err := newUserFirstLoginEvent(userExtID, dateTime)
+
+func (u *UserDistributor) DispatchUserFirstTimeLogin(userExtID string, campaignExtID string, dateTime time.Time) error {
+	t, err := newUserFirstLoginEvent(userExtID, campaignExtID, dateTime)
 	if err != nil {
 		return err
 	}

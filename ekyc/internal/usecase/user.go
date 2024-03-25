@@ -26,7 +26,7 @@ func NewUserService(r UserRepo, a Authenticator, d UserEventDistributor) *UserSe
 	}
 }
 
-func (c *UserService) SignUp(ctx context.Context, email, password string, campaignExtID string) (*model.User, error) {
+func (c *UserService) SignUp(ctx context.Context, email, password string, campaignExtID *string) (*model.User, error) {
 	_, found, err := c.repo.FindUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
@@ -46,8 +46,9 @@ func (c *UserService) SignUp(ctx context.Context, email, password string, campai
 	}
 
 	var u = model.User{
-		Email:    email,
-		Password: hashedPass,
+		Email:         email,
+		Password:      hashedPass,
+		CampaignExtID: campaignExtID,
 	}
 	result, err := c.repo.CreateUser(ctx, u)
 	if err != nil {
@@ -79,9 +80,16 @@ func (c *UserService) SignIn(ctx context.Context, email, password string) (strin
 
 	if u.FirstLoginDate == nil {
 		var firstLoginTime = time.Now()
-		if err := c.repo.UpdateFirstLogin(ctx, u.ID, firstLoginTime, func() error {
-			return c.distributor.DispatchUserFirstTimeLogin(u.ExtID, firstLoginTime)
-		}); err != nil {
+		var callback = func() error { return nil }
+
+		// event for user registered based on a campaign and just have fist login
+		if u.CampaignExtID != nil {
+			callback = func() error {
+				return c.distributor.DispatchUserFirstTimeLogin(u.ExtID, *u.CampaignExtID, firstLoginTime)
+			}
+		}
+
+		if err := c.repo.UpdateFirstLogin(ctx, u.ID, firstLoginTime, callback); err != nil {
 			return "", err
 		}
 	}

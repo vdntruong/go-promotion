@@ -19,7 +19,7 @@ func newCampaignUserRoutes(handler *gin.RouterGroup, c usecase.CampaignUserUseca
 	r := &campaignUserRoutes{c}
 	h := handler.Group("/campaign-users")
 	{
-		h.POST("/", r.CreateCampaignUser)
+		// h.POST("/", r.CreateCampaignUser)
 		h.GET("/", r.GetCampaignUsers)
 	}
 }
@@ -31,7 +31,7 @@ func (r *campaignUserRoutes) CreateCampaignUser(ctx *gin.Context) {
 		return
 	}
 
-	result, err := r.c.CreateCampaignUser(ctx, req.CampaignExtID, req.UserExtID, req.RegisterDate)
+	result, _, err := r.c.CreateCampaignUser(ctx, req.CampaignExtID, req.UserExtID, req.RegisterDate)
 	if err != nil {
 		resp.RespondError(ctx, err)
 		return

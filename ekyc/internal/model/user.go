@@ -13,6 +13,8 @@ type User struct {
 	Email    string `gorm:"unique;uniqueIndex;not null"`
 	Password string `gorm:"not null"`
 	Username *string
+
+	CampaignExtID  *string
 	FirstLoginDate *time.Time
 }
 

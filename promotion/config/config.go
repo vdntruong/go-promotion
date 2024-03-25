@@ -11,6 +11,7 @@ type (
 		App      `yaml:"app"`
 		HTTP     `yaml:"http"`
 		Database `yaml:"database"`
+		Redis    `yaml:"redis"`
 	}
 
 	App struct {
@@ -30,6 +31,12 @@ type (
 		User     string `yaml:"user"`
 		Password string `yaml:"password"`
 		Name     string `yaml:"name"`
+	}
+
+	Redis struct {
+		Host     string `yaml:"host"`
+		Port     string `yaml:"port"`
+		Password string `yaml:"password"`
 	}
 )
 

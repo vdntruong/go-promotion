@@ -4,6 +4,9 @@ import (
 	"errors"
 )
 
+var (
+	ErrDuplicate error = errors.New("duplicate")
+)
 
 type ResponseError struct {
 	err        error

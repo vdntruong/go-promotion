@@ -44,10 +44,10 @@ FROM alpine:latest AS final
 # Leverage a cache mount to /var/cache/apk/ to speed up subsequent builds.
 RUN --mount=type=cache,target=/var/cache/apk \
     apk --update add \
-        ca-certificates \
-        tzdata \
-        && \
-        update-ca-certificates
+    ca-certificates \
+    tzdata \
+    && \
+    update-ca-certificates
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
@@ -64,6 +64,9 @@ USER appuser
 
 # Copy the executable from the "build" stage.
 COPY --from=build /bin/server /bin/
+
+# Copy config file
+COPY ./config/config.yaml /bin/config/
 
 # Expose the port that the application listens on.
 EXPOSE 4000

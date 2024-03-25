@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"time"
 
 	"promotion/internal/model"
 	"promotion/internal/pkg/util"
@@ -15,19 +14,12 @@ type CampaignRepository struct {
 }
 
 func NewCampaignRepository(db *gorm.DB) *CampaignRepository {
-	sqlDB, err := db.DB()
-	if err != nil {
-		panic(err)
-	}
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
-	sqlDB.SetConnMaxLifetime(time.Hour)
 	return &CampaignRepository{db: db}
 }
 
 func (c *CampaignRepository) CreateCampaign(ctx context.Context, cp model.Campaign) (*model.Campaign, error) {
 	if err := c.db.WithContext(ctx).Create(&cp).Error; err != nil {
-		if util.IsDuplicateError(err)  {
+		if util.IsDuplicateError(err) {
 			return nil, model.NewRespError(err, model.WithDescription("duplicate key"))
 		}
 		return nil, err

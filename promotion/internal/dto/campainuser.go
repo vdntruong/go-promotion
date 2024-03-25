@@ -19,5 +19,5 @@ type CreateCampaignUser struct {
 type CampaignUserFilter struct {
 	CampaignExtID string `form:"campaignExtId"`
 	UserExtID     string `form:"userExtId"`
-	Vouchered     *bool   `form:"vouchered,omitempty"`
+	Vouchered     *bool  `form:"vouchered,omitempty"`
 }

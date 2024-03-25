@@ -31,6 +31,16 @@ func Run(cfg *config.Config) {
 		panic(err)
 	}
 
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic(err)
+	}
+	defer sqlDB.Close()
+
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+
 	db.AutoMigrate(&model.Campaign{})
 	db.AutoMigrate(&model.CampaignUser{})
 
@@ -62,7 +72,7 @@ func Run(cfg *config.Config) {
 		}
 	}()
 
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutdown Server ...")
@@ -74,13 +84,9 @@ func Run(cfg *config.Config) {
 		if err == http.ErrServerClosed {
 			log.Println("Server shutdown completed")
 		} else {
-			log.Fatal("Server Shutdown:", err)
+			log.Fatalf("Server Shutdown: %v", err)
 		}
 	}
 
-	select {
-	case <-ctx.Done():
-		log.Println("timeout of 5 seconds.")
-	}
 	log.Println("Server exiting")
 }
