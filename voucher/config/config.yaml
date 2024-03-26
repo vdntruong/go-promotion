@@ -3,12 +3,12 @@ app:
   version: 0.1
 
 http:
-  port: "6000"
+  port: "5000"
   read-timeout: "10s"
   write-timeout: "10s"
 
 database:
-  host: "localhost"
+  host: "db"
   port: 5432
   user: "user"
   password: "password"

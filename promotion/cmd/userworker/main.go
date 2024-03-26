@@ -5,17 +5,17 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"syscall"
 	"time"
 
 	"promotion/config"
-	"promotion/internal/model"
 	"promotion/internal/pkg/gormdb"
 	"promotion/internal/usecase"
 	"promotion/internal/usecase/repository"
+	"promotion/internal/usecase/voucher"
 	"promotion/internal/usecase/worker"
 
 	"github.com/hibiken/asynq"
+	"golang.org/x/sys/unix"
 )
 
 func main() {
@@ -39,42 +39,41 @@ func main() {
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	db.AutoMigrate(&model.Campaign{})
-	db.AutoMigrate(&model.CampaignUser{})
-
-	mux := asynq.NewServeMux()
-
 	// Usecase
 	campaignUsecase := usecase.NewCampaignService(repository.NewCampaignRepository(db))
 	campaignUserUsecase := usecase.NewCampaignUserService(repository.NewCampaignUserRepository(db))
+	voucherClient := voucher.NewVoucherClient(cfg)
+	// if voucherAvailable, err := util.Retry(voucherClient.Ping, 5, 5*time.Second); err != nil {
+	// 	panic(err)
+	// } else if !voucherAvailable {
+	// 	panic(errors.New("voucher client unavailable"))
+	// }
 
-	// Handler
-	userFirstLoginHandler := worker.NewUserTaskHandler(campaignUserUsecase, campaignUsecase)
+	userFirstLoginHandler := worker.NewUserTaskHandler(campaignUserUsecase, campaignUsecase, voucherClient)
+	mux := asynq.NewServeMux()
 	mux.Handle(worker.EventTypeUserFirstLogin, userFirstLoginHandler)
 
-	// Serve
 	redisAddr := fmt.Sprintf("%s:%s", cfg.Redis.Host, cfg.Redis.Port)
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{Addr: redisAddr, Password: cfg.Redis.Password},
-		asynq.Config{
-			Concurrency: 1,
-			// Queues: map[string]int{
-			// 	"critical": 6,
-			// 	"default":  3,
-			// 	"low":      1,
-			// },
-		})
+		asynq.Config{Concurrency: 1},
+	)
 
-	go func() {
-		if err := srv.Run(mux); err != nil {
-			log.Fatalf("could not run server: %v", err)
+	if err := srv.Start(mux); err != nil {
+		log.Fatalf("could not start server: %v", err)
+	}
+
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, unix.SIGTERM, unix.SIGINT, unix.SIGTSTP)
+	for {
+		s := <-sigs
+		if s == unix.SIGTSTP {
+			log.Println("Shutdown Server ...")
+			srv.Stop() // stop processing new tasks
+			continue
 		}
-	}()
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	log.Println("Shutdown Server ...")
+		break
+	}
 
 	srv.Shutdown()
 	log.Println("Server exiting")

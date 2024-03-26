@@ -6,17 +6,15 @@ services:
     volumes:
       - ./config/config.yaml:/config.yaml
     ports:
-      - 3000:3000
+      - 3001:3000
     depends_on:
       - wait_for_dependencies
-    networks:
-      - ekyc-network
 
   wait_for_dependencies:
     image: busybox
     volumes:
       - ./wait-for.sh:/wait-for.sh
-    command: ["sh", "-c", "/wait-for.sh postgres:5432 -t 60"]
+    command: ["sh", "-c", "./wait-for.sh db:5432 -t 15 -- echo 'DB READY~~'"]
     depends_on:
       db:
         condition: service_healthy
@@ -25,14 +23,13 @@ services:
 
   db:
     image: postgres
-    container_name: ekyc-db
     restart: always
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=ekyc_db
-    ports:
-      - 5432:5432
+    # ports:
+    #   - 5432:5432
     expose:
       - 5432
     healthcheck:
@@ -41,9 +38,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - ekyc-db-data:/var/lib/postgresql/data
-    networks:
-      - ekyc-network
+      - db-data:/var/lib/postgresql/data
 
   redis:
     container_name: "redis"
@@ -62,8 +57,4 @@ services:
       - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
 
 volumes:
-  ekyc-db-data:
-
-networks:
-  ekyc-network:
-    driver: bridge
+  db-data:

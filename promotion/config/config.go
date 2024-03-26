@@ -52,6 +52,7 @@ func NewConfig() (*Config, error) {
 	cfg := &Config{}
 	viper.SetConfigName("config.yaml")
 	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
 	viper.AddConfigPath("./config")
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)

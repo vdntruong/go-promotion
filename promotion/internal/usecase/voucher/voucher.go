@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"promotion/config"
@@ -19,26 +20,31 @@ type VoucherClient struct {
 }
 
 func NewVoucherClient(cfg *config.Config) *VoucherClient {
-
+	healthEndPoint := fmt.Sprintf("http://%s:%s/%s", cfg.Voucher.Host, cfg.Voucher.Port, cfg.Voucher.Healthz)
+	log.Println("healthEndPoint", healthEndPoint)
+	creationEndPoint := fmt.Sprintf("http://%s:%s/%s", cfg.Voucher.Host, cfg.Voucher.Port, cfg.Voucher.EndPoint)
+	log.Println("creationEndPoint", creationEndPoint)
 	return &VoucherClient{
 		client:           &http.Client{},
-		healthEndPoint:   fmt.Sprintf("http://%s:%s/%s", cfg.Voucher.Host, cfg.Voucher.Port, cfg.Voucher.Healthz),
-		creationEndPoint: fmt.Sprintf("http://%s:%s/%s", cfg.Voucher.Host, cfg.Voucher.Port, cfg.Voucher.EndPoint),
+		healthEndPoint:   healthEndPoint,
+		creationEndPoint: creationEndPoint,
 	}
 }
-func (v *VoucherClient) Ping() bool {
+
+func (v *VoucherClient) Ping() (bool, error) {
 	req, err := http.NewRequest(http.MethodGet, v.healthEndPoint, nil)
 	if err != nil {
-		return false
+		return false, err
 	}
 
 	resp, err := v.client.Do(req)
 	if err != nil {
-		return false
+		return false, err
 	}
 	defer resp.Body.Close()
 
-	return resp.StatusCode == http.StatusOK
+	log.Println("Client addr:", v.healthEndPoint, ", ping status:", resp.StatusCode)
+	return resp.StatusCode == http.StatusOK, nil
 }
 
 func (v *VoucherClient) CreateVoucher(

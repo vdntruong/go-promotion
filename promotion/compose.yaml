@@ -3,22 +3,41 @@ services:
     build:
       context: .
       target: final
+    volumes:
+      - ./config/config.yaml:/config.yaml
     ports:
-      - 4000:4000
+      - 4001:4000
+    depends_on:
+      - wait_for_dependencies
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker.Dockerfile
+      target: final
+    volumes:
+      - ./config/config.yaml:/config.yaml
+    depends_on:
+      - wait_for_dependencies
+
+  wait_for_dependencies:
+    image: busybox
+    volumes:
+      - ./wait-for.sh:/wait-for.sh
+    command: ["sh", "-c", "./wait-for.sh db:5432 -t 15 -- echo 'DB READY~~'"]
     depends_on:
       db:
         condition: service_healthy
 
   db:
     image: postgres
-    container_name: promotion-db
     restart: always
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=promotion_db
-    ports:
-      - 5432:5432
+    # ports:
+    #   - 5432:5432
     expose:
       - 5432
     healthcheck:
