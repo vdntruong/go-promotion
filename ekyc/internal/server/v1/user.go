@@ -20,12 +20,20 @@ func newUserRoutes(handler *gin.RouterGroup, c usecase.UserUsecase) {
 	r := &userRoutes{c}
 	h := handler.Group("/users")
 	{
-		// maximum of 100 simultaneous connections per instace
 		h.POST("/sign-up", limit.MaxAllowed(100), r.SignUp)
 		h.POST("/sign-in", r.SignIn)
 	}
 }
 
+// @Summary     User signup
+// @Description user register new account
+// @ID          signup
+// @Tags  	    Auth
+// @Accept      json
+// @Produce     json
+// @Param request body dto.SignUpUser true "query params"
+// @Success     200 {object} dto.User
+// @Router      /users/sign-up [post]
 func (r *userRoutes) SignUp(ctx *gin.Context) {
 	var req dto.SignUpUser
 	if err := ctx.ShouldBindJSON(&req); err != nil {

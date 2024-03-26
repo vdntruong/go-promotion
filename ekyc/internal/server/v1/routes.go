@@ -10,10 +10,17 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func NewRouter(handler *gin.Engine,  c usecase.UserUsecase) {
+// NewRouter -.
+// Swagger spec:
+// @title           eKYC API
+// @version         1.0
+// @description     This is eKYC API Spec.
+// @termsOfService  http://swagger.io/terms/
+// @host			localhost:3001
+// @BasePath		/v1
+func NewRouter(handler *gin.Engine, c usecase.UserUsecase) {
 	// Swagger
-	swaggerHandler := ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "DISABLE_SWAGGER_HTTP_HANDLER")
-	handler.GET("/swagger/*any", swaggerHandler)
+	handler.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// Prometheus metrics
 	// handler.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
