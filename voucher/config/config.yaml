@@ -1,9 +1,9 @@
 app:
-  name: "promotion-ms"
+  name: "voucher-ms"
   version: 0.1
 
 http:
-  port: "4000"
+  port: "6000"
   read-timeout: "10s"
   write-timeout: "10s"
 
@@ -12,15 +12,9 @@ database:
   port: 5432
   user: "user"
   password: "password"
-  name: "promotion_db"
+  name: "voucher_db"
 
 redis:
   host: "localhost"
   port: "6379"
   password: "mypassword"
-
-voucher:
-  host: "localhost"
-  port: "6000"
-  endpoint: "v1/vouchers"
-  healthz: "v1/healthz"

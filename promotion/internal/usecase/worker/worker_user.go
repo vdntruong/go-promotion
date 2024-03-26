@@ -10,15 +10,17 @@ import (
 	"promotion/internal/usecase"
 
 	"github.com/hibiken/asynq"
+	"github.com/shopspring/decimal"
 )
 
 type UserTaskHandler struct {
-	uc     usecase.CampaignUserUsecase
-	campUc usecase.CampaignUsecase
+	uc        usecase.CampaignUserUsecase
+	campUc    usecase.CampaignUsecase
+	voucherUc usecase.VoucherUsecase
 }
 
-func NewUserTaskHandler(c usecase.CampaignUserUsecase, campUc usecase.CampaignUsecase) *UserTaskHandler {
-	return &UserTaskHandler{uc: c, campUc: campUc}
+func NewUserTaskHandler(c usecase.CampaignUserUsecase, campUc usecase.CampaignUsecase, voucherUc usecase.VoucherUsecase) *UserTaskHandler {
+	return &UserTaskHandler{uc: c, campUc: campUc, voucherUc: voucherUc}
 }
 
 func (u *UserTaskHandler) ProcessTask(ctx context.Context, t *asynq.Task) error {
@@ -40,10 +42,22 @@ func (u *UserTaskHandler) handleUserFirstTimeLogin(ctx context.Context, p UserFi
 	}
 
 	if campU.FirstLoginDate.After(camp.StartDate) && campU.FirstLoginDate.Before(camp.EndDate) {
-		fmt.Println("call to voucher to generate voucher campid:", campU.CampaignExtID, "user:", campU.UserExtID)
+		retry, err := u.voucherUc.CreateVoucher(
+			ctx,
+			camp.Name,
+			campU.CampaignExtID,
+			campU.UserExtID,
+			decimal.NewFromFloat(0.3),
+		)
+		if err != nil {
+			if retry {
+				return fmt.Errorf("failed to generate voucher record: %v", err)
+			}
+			return fmt.Errorf("failed to generate voucher record: %v: %w", err, asynq.SkipRetry)
+		}
 		return nil
 	} else {
-		fmt.Println("generate voucher expired campid:", campU.CampaignExtID, "user:", campU.UserExtID)
+		fmt.Println("campaign expired campExtId:", campU.CampaignExtID, "userExtId:", campU.UserExtID)
 	}
 
 	return nil

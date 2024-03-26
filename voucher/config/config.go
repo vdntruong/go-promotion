@@ -12,7 +12,6 @@ type (
 		HTTP     `yaml:"http"`
 		Database `yaml:"database"`
 		Redis    `yaml:"redis"`
-		Voucher  `yaml:"voucher"`
 	}
 
 	App struct {
@@ -38,13 +37,6 @@ type (
 		Host     string `yaml:"host"`
 		Port     string `yaml:"port"`
 		Password string `yaml:"password"`
-	}
-
-	Voucher struct {
-		Host     string `yaml:"host"`
-		Port     string `yaml:"port"`
-		EndPoint string `yaml:"endpoint"`
-		Healthz  string `yaml:"healthz"`
 	}
 )
 
