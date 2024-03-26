@@ -58,7 +58,15 @@ func main() {
 	redisAddr := fmt.Sprintf("%s:%s", cfg.Redis.Host, cfg.Redis.Port)
 	srv := asynq.NewServer(
 		asynq.RedisClientOpt{Addr: redisAddr, Password: cfg.Redis.Password},
-		asynq.Config{Concurrency: 1},
+		asynq.Config{
+			Concurrency: 5,
+			// Available to config queue's campaign for performance
+			// Queues: map[string]int{
+			// 	"campaign-01": 6,
+			// 	"campaign-02": 3,
+			// 	"campaign-03": 1,
+			// },
+		},
 	)
 
 	if err := srv.Start(mux); err != nil {
