@@ -8,19 +8,19 @@ http:
   write-timeout: "10s"
 
 database:
-  host: "db"
+  host: "promotion-db"
   port: 5432
   user: "user"
   password: "password"
   name: "promotion_db"
 
 redis:
-  host: "127.0.0.1"
+  host: "redis"
   port: "6379"
   password: "mypassword"
 
 voucher:
-  host: "127.0.0.1"
-  port: "5001"
+  host: "voucher-server"
+  port: "5000"
   endpoint: "v1/vouchers"
   healthz: "v1/healthz"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+docker network create promotion-bridge-network
+
 # Start ekyc service
 echo "Starting ekyc service..."
 cd ekyc

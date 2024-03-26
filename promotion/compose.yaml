@@ -1,5 +1,5 @@
 services:
-  server:
+  promotion-server:
     build:
       context: .
       target: final
@@ -9,6 +9,8 @@ services:
       - 4001:4000
     depends_on:
       - wait_for_dependencies
+    networks:
+      - promotion-bridge-network
 
   worker:
     build:
@@ -19,25 +21,27 @@ services:
       - ./config/config.yaml:/config.yaml
     depends_on:
       - wait_for_dependencies
+    networks:
+      - promotion-bridge-network
 
   wait_for_dependencies:
     image: busybox
     volumes:
       - ./wait-for.sh:/wait-for.sh
-    command: ["sh", "-c", "./wait-for.sh db:5432 -t 15 -- echo 'DB READY~~'"]
+    command: ["sh", "-c", "./wait-for.sh promotion-db:5432 -t 15 -- echo '~~'"]
     depends_on:
-      db:
+      promotion-db:
         condition: service_healthy
 
-  db:
+  promotion-db:
     image: postgres
     restart: always
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=promotion_db
-    # ports:
-    #   - 5432:5432
+    ports:
+      - 5434:5432
     expose:
       - 5432
     healthcheck:
@@ -47,6 +51,12 @@ services:
       retries: 5
     volumes:
       - promotion-db-data:/var/lib/postgresql/data
+    networks:
+      - promotion-bridge-network
 
 volumes:
   promotion-db-data:
+
+networks:
+  promotion-bridge-network:
+    external: true

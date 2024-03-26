@@ -18,4 +18,6 @@ cd ekyc
 docker-compose down -v
 cd ..
 
+docker network rm promotion-bridge-network
+
 echo "All services Cleaned successfully."

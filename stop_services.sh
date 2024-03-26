@@ -18,4 +18,6 @@ cd ekyc
 docker-compose down
 cd ..
 
+docker network rm promotion-bridge-network
+
 echo "All services stopped successfully."

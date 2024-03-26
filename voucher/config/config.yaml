@@ -8,13 +8,13 @@ http:
   write-timeout: "10s"
 
 database:
-  host: "db"
+  host: "voucher-db"
   port: 5432
   user: "user"
   password: "password"
   name: "voucher_db"
 
 redis:
-  host: "localhost"
+  host: "redis"
   port: "6379"
   password: "mypassword"
