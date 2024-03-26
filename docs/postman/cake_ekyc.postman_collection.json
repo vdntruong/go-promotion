@@ -1,0 +1,105 @@
+{
+	"info": {
+		"_postman_id": "12fc2412-be3c-41ad-ac38-88b3fbb174b4",
+		"name": "cake_eeekyc",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6285108",
+		"_collection_link": "https://blue-water-1739-1.postman.co/workspace/main~85c87d38-12a9-4276-a6d0-a13f5f197c41/collection/6285108-12fc2412-be3c-41ad-ac38-88b3fbb174b4?action=share&creator=6285108&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "liveness",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/liveness",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"liveness"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "readiness",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3001/readiness",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"readiness"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sign up",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"vdntruong222@email.com\",\n    \"password\": \"123456789\",\n    \"campaignExtID\": \"dc571783-98c4-420d-b197-fab8f6cebe45\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/v1/users/sign-up",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"users",
+						"sign-up"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "sign in",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"vdntruong222@email.com\",\n    \"password\": \"123456789\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3001/v1/users/sign-in",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"v1",
+						"users",
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

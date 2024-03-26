@@ -1,0 +1,173 @@
+{
+	"info": {
+		"_postman_id": "b9fd9a91-f0d3-4b50-85a6-744e536032d6",
+		"name": "cake_voucher",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6285108",
+		"_collection_link": "https://blue-water-1739-1.postman.co/workspace/main~85c87d38-12a9-4276-a6d0-a13f5f197c41/collection/6285108-b9fd9a91-f0d3-4b50-85a6-744e536032d6?action=share&creator=6285108&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "get voucher",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5001/v1/vouchers",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"v1",
+						"vouchers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "liveness",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5001/liveness",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"liveness"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "readiness",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5001/readiness",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"readiness"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "filter active vouchers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5001/v1/vouchers?isActive=true",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"v1",
+						"vouchers"
+					],
+					"query": [
+						{
+							"key": "isActive",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "filter user's vouchers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5001/v1/vouchers?userExtId=032d3b85-8f25-4b4e-b124-26d47361ad5e",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"v1",
+						"vouchers"
+					],
+					"query": [
+						{
+							"key": "userExtId",
+							"value": "032d3b85-8f25-4b4e-b124-26d47361ad5e"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create voucher",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"campaignExtId\": \"FAKE-CAMPAIGN-ID\",\n    \"userExtId\": \"36ba6144-5a8b-493e-8340-6b68ada9896e\",\n    \"name\": \"FAKE CAMPAIGN\",\n    \"value\": 0.3,\n    \"fixedAmount\": false\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5001/v1/vouchers",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"v1",
+						"vouchers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "redeem voucher",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"requestID\": \"{{$guid}}\",\n    \"userExtId\": \"104b3c24-a129-4335-9452-ce695d2ef632\",\n    \"voucherExtID\": \"ab0289a4-e8f3-4a16-86f5-835c194dcbba\",\n    \"cost\": 10.00,\n    \"price\": 7.00\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5001/v1/vouchers/redeem",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"v1",
+						"vouchers",
+						"redeem"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

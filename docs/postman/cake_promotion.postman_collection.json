@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "1f749641-afdb-4aa7-8e2f-105879b22b82",
+		"name": "cake_promotion",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6285108",
+		"_collection_link": "https://blue-water-1739-1.postman.co/workspace/main~85c87d38-12a9-4276-a6d0-a13f5f197c41/collection/6285108-1f749641-afdb-4aa7-8e2f-105879b22b82?action=share&creator=6285108&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "create campaign",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');",
+							"",
+							"pm.environment.set('startDate', moment().format(\"YYYY-MM-DDTHH:mm:ssZ\"));",
+							"pm.environment.set('endDate', moment().add(5, 'days').format(\"YYYY-MM-DDTHH:mm:ssZ\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Sinh Nhat Thang 4\",\n    \"description\": \"Giam gia 40%\",\n    \"startDate\": \"{{startDate}}\",\n    \"endDate\": \"{{endDate}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4001/v1/campaigns/",
+					"host": [
+						"localhost"
+					],
+					"port": "4001",
+					"path": [
+						"v1",
+						"campaigns",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create expired campaign",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');",
+							"",
+							"pm.environment.set('startDate', moment().subtract(35, \"days\").format(\"YYYY-MM-DDTHH:mm:ssZ\"));",
+							"pm.environment.set('endDate', moment().subtract(5, 'days').format(\"YYYY-MM-DDTHH:mm:ssZ\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Sinh Nhat Thang 2\",\n    \"description\": \"Giam gia 20%\",\n    \"startDate\": \"{{startDate}}\",\n    \"endDate\": \"{{endDate}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:4001/v1/campaigns/",
+					"host": [
+						"localhost"
+					],
+					"port": "4001",
+					"path": [
+						"v1",
+						"campaigns",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get campaigns",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4001/v1/campaigns",
+					"host": [
+						"localhost"
+					],
+					"port": "4001",
+					"path": [
+						"v1",
+						"campaigns"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "liveness",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4001/liveness",
+					"host": [
+						"localhost"
+					],
+					"port": "4001",
+					"path": [
+						"liveness"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "readiness",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4001/readiness",
+					"host": [
+						"localhost"
+					],
+					"port": "4001",
+					"path": [
+						"readiness"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "find campaign-user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:4001/v1/campaign-users?userExtId=95f00019-6067-421c-8e12-89f01b4a7dcc&vouchered=false",
+					"host": [
+						"localhost"
+					],
+					"port": "4001",
+					"path": [
+						"v1",
+						"campaign-users"
+					],
+					"query": [
+						{
+							"key": "userExtId",
+							"value": "95f00019-6067-421c-8e12-89f01b4a7dcc"
+						},
+						{
+							"key": "vouchered",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
