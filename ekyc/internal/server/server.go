@@ -25,6 +25,7 @@ import (
 	limits "github.com/gin-contrib/size"
 	"github.com/gin-gonic/gin"
 	"github.com/hibiken/asynq"
+	"github.com/redis/go-redis/v9"
 )
 
 func Run(cfg *config.Config) {
@@ -47,6 +48,11 @@ func Run(cfg *config.Config) {
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	redisAddr := fmt.Sprintf("%s:%s", cfg.Redis.Host, cfg.Redis.Port)
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     redisAddr,
+		Password: cfg.Redis.Password,
+	})
+	defer redisClient.Close()
 	asynqClient := asynq.NewClient(asynq.RedisClientOpt{Addr: redisAddr, Password: cfg.Redis.Password})
 	defer asynqClient.Close()
 
@@ -56,7 +62,7 @@ func Run(cfg *config.Config) {
 	handler.Use(limits.RequestSizeLimiter(500))
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
-	healthHandlers := healthHttp.NewHealthHandlers(cfg)
+	healthHandlers := healthHttp.NewHealthHandlers(sqlDB, redisClient)
 	healthHttp.MapHealthRoutes(handler, healthHandlers)
 
 	// Usecase

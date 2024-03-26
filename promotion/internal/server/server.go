@@ -50,7 +50,7 @@ func Run(cfg *config.Config) {
 	handler.Use(limits.RequestSizeLimiter(500))
 	handler.Use(gin.Logger())
 	handler.Use(gin.Recovery())
-	healthHandlers := healthHttp.NewHealthHandlers(cfg)
+	healthHandlers := healthHttp.NewHealthHandlers(sqlDB)
 	healthHttp.MapHealthRoutes(handler, healthHandlers)
 
 	// Usecase
