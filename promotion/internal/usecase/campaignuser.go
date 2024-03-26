@@ -21,11 +21,13 @@ func (s *CampaignUserService) CreateCampaignUser(
 	campaignExtID string,
 	userExtID string,
 	registerDate time.Time,
+	firstLoginDate *time.Time,
 ) (*model.CampaignUser, *model.Campaign, error) {
 	var cuser = model.CampaignUser{
 		CampaignExtID:    campaignExtID,
 		UserExtID:        userExtID,
 		RegistrationDate: registerDate,
+		FirstLoginDate:   firstLoginDate,
 	}
 	return s.repo.CreateCampaignUserWithEligibility(ctx, cuser)
 }

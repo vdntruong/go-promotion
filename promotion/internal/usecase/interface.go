@@ -25,7 +25,7 @@ type CampaignRepo interface {
 }
 
 type CampaignUserUsecase interface {
-	CreateCampaignUser(ctx context.Context, campaignExtID, userExtID string, registerDate time.Time) (*model.CampaignUser, *model.Campaign, error)
+	CreateCampaignUser(ctx context.Context, campaignExtID, userExtID string, registerDate time.Time, firstLoginDate *time.Time) (*model.CampaignUser, *model.Campaign, error)
 	GetCampaignUsers(ctx context.Context, filter dto.CampaignUserFilter) ([]*model.CampaignUser, error)
 }
 

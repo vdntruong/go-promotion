@@ -80,12 +80,13 @@ func (c *UserService) SignIn(ctx context.Context, email, password string) (strin
 
 	if u.FirstLoginDate == nil {
 		var firstLoginTime = time.Now()
+		u.FirstLoginDate = &firstLoginTime
 		var callback = func() error { return nil }
 
 		// event for user registered based on a campaign and just have fist login
 		if u.CampaignExtID != nil {
 			callback = func() error {
-				return c.distributor.DispatchUserFirstTimeLogin(u.ExtID, *u.CampaignExtID, firstLoginTime)
+				return c.distributor.DispatchUserFirstTimeLogin(u.ExtID, *u.CampaignExtID, u.CreatedAt, firstLoginTime)
 			}
 		}
 

@@ -12,14 +12,16 @@ const EventTypeUserFirstLogin = "user:campaign:first-time-login"
 type UserFirstLoginPayload struct {
 	UserExtID     string
 	CampaignExtID string
+	RegisterTime  time.Time
 	LoginDateTime time.Time
 }
 
-func newUserFirstLoginEvent(userExtID string, campaignExtID string, dateTime time.Time) (*asynq.Task, error) {
+func newUserFirstLoginEvent(userExtID string, campaignExtID string, register, login time.Time) (*asynq.Task, error) {
 	payload, err := json.Marshal(UserFirstLoginPayload{
 		UserExtID:     userExtID,
 		CampaignExtID: campaignExtID,
-		LoginDateTime: dateTime,
+		RegisterTime:  register,
+		LoginDateTime: login,
 	})
 	if err != nil {
 		return nil, err

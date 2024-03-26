@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -9,6 +10,7 @@ import (
 
 	"promotion/config"
 	"promotion/internal/pkg/gormdb"
+	"promotion/internal/pkg/util"
 	"promotion/internal/usecase"
 	"promotion/internal/usecase/repository"
 	"promotion/internal/usecase/voucher"
@@ -43,11 +45,11 @@ func main() {
 	campaignUsecase := usecase.NewCampaignService(repository.NewCampaignRepository(db))
 	campaignUserUsecase := usecase.NewCampaignUserService(repository.NewCampaignUserRepository(db))
 	voucherClient := voucher.NewVoucherClient(cfg)
-	// if voucherAvailable, err := util.Retry(voucherClient.Ping, 5, 5*time.Second); err != nil {
-	// 	panic(err)
-	// } else if !voucherAvailable {
-	// 	panic(errors.New("voucher client unavailable"))
-	// }
+	if voucherAvailable, err := util.Retry(voucherClient.Ping, 5, 5*time.Second); err != nil {
+		panic(err)
+	} else if !voucherAvailable {
+		panic(errors.New("voucher client unavailable"))
+	}
 
 	userFirstLoginHandler := worker.NewUserTaskHandler(campaignUserUsecase, campaignUsecase, voucherClient)
 	mux := asynq.NewServeMux()

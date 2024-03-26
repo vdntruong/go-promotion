@@ -17,8 +17,8 @@ func NewUserDistributor(c *asynq.Client) *UserDistributor {
 	}
 }
 
-func (u *UserDistributor) DispatchUserFirstTimeLogin(userExtID string, campaignExtID string, dateTime time.Time) error {
-	t, err := newUserFirstLoginEvent(userExtID, campaignExtID, dateTime)
+func (u *UserDistributor) DispatchUserFirstTimeLogin(userExtID string, campaignExtID string, register, login time.Time) error {
+	t, err := newUserFirstLoginEvent(userExtID, campaignExtID, register, login)
 	if err != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func (u *UserDistributor) DispatchUserFirstTimeLogin(userExtID string, campaignE
 	if info, err := u.client.Enqueue(t); err != nil {
 		return err
 	} else {
-		log.Printf("enqueued user first time login event: id=%s queue=%s", info.ID, info.Queue)
+		log.Printf("enqueued user first time login event: id=%s queue=%s, userid=%s", info.ID, info.Queue, userExtID)
 	}
 	return nil
 }

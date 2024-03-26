@@ -33,7 +33,7 @@ func (u *UserTaskHandler) ProcessTask(ctx context.Context, t *asynq.Task) error 
 }
 
 func (u *UserTaskHandler) handleUserFirstTimeLogin(ctx context.Context, p UserFirstLoginPayload) error {
-	campU, camp, err := u.uc.CreateCampaignUser(ctx, p.CampaignExtID, p.UserExtID, p.LoginDateTime)
+	campU, camp, err := u.uc.CreateCampaignUser(ctx, p.CampaignExtID, p.UserExtID, p.RegisterTime, &p.LoginDateTime)
 	if err != nil {
 		if errors.Is(err, model.ErrDBNotFound) || errors.Is(err, model.ErrDuplicate) {
 			return fmt.Errorf("failed to add campaign user record: %v: %w", err, asynq.SkipRetry)

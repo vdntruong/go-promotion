@@ -18,7 +18,7 @@ type UserUsecase interface {
 }
 
 type UserEventDistributor interface {
-	DispatchUserFirstTimeLogin(userExtID string, campaignExtID string, dateTime time.Time) error
+	DispatchUserFirstTimeLogin(userExtID string, campaignExtID string, register, login time.Time) error
 }
 
 type UserRepo interface {
